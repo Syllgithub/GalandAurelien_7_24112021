@@ -35,6 +35,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "../scss/Utils/_mixins.scss";
 .nav {
   position: fixed;
   box-shadow: 0 4px 3px -3px rgb(202, 202, 202);
@@ -43,7 +44,10 @@ export default {
   top: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 80%;
+  @include desktop {
+    width: 90%;
+  }
+
   &__menu {
     display: flex;
     height: 7vh;

@@ -37,7 +37,7 @@ exports.signup = (req, res, next) => {
 };
 
 exports.profile = async (req, res, next) => {
-  console.log(req.params.id);
+  //console.log(req.params.id);
   if (req.params.id) {
     const [user, _] = await User.findById(req.params.id);
     const token = req.headers.authorization;
@@ -55,9 +55,7 @@ exports.profile = async (req, res, next) => {
 };
 
 exports.modifyProfile = async (req, res, next) => {
-  console.log(req.file);
   const userinfos = JSON.parse(req.body.user);
-  console.log(userinfos);
   if (req.file) {
     if (!userinfos.userPic) {
       const user = {
@@ -72,20 +70,23 @@ exports.modifyProfile = async (req, res, next) => {
       };
       await User.updateUser(user);
     } else {
+      // Refaire requete sql pour userPic + refacto
+
       const previousUserPic = userinfos.userPic.split("/images/")[1];
-      fs.unlink(`images/${previousUserPic}`, () => {
-        const user = {
-          id: req.params.id,
-          lastname: userinfos.lastname,
-          firstname: userinfos.firstname,
-          email: userinfos.email,
-          bio: userinfos.bio,
-          userPic: `${req.protocol}://${req.get("host")}/images/${
-            req.file.filename
-          }`,
-        };
-        User.updateUser(user);
-      });
+      console.log(previousUserPic);
+
+      const user = {
+        id: req.params.id,
+        lastname: userinfos.lastname,
+        firstname: userinfos.firstname,
+        email: userinfos.email,
+        bio: userinfos.bio,
+        userPic: `${req.protocol}://${req.get("host")}/images/${
+          req.file.filename
+        }`,
+      };
+      User.updateUser(user);
+      fs.unlink("images/" + previousUserPic, () => {});
     }
   } else {
     const user = {

@@ -138,7 +138,7 @@ export default {
   margin-top: 50px;
   @include desktop {
     flex-direction: row;
-    width: 80%;
+    //width: 80%;
     margin: auto;
     height: 80vh;
   }
@@ -161,6 +161,7 @@ export default {
     box-shadow: 0px 0px 5px 2px rgb(202, 202, 202);
 
     width: 25%;
+    max-width: 380px;
   }
   h1 {
     font-size: 1.5em;

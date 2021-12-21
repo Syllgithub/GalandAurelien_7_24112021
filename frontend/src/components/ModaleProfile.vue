@@ -10,33 +10,34 @@
       <hr />
       <div class="modale__name">
         <p>Nom et Prénom</p>
-        <input type="text" placeholder="Galand" />
-        <input type="text" placeholder="Aurélien" />
+        <input type="text" v-model="lastname" />
+        <input type="text" v-model="firstname" />
       </div>
 
       <div class="modale__profilePic">
         <p>Photo de profil</p>
         <div class="pic">
-          <img :src="userPic" /><!--src="../../images/aurelien.galand.jpg" />-->
+          <img
+            :src="tempUserPic"
+            :key="tempUserPic"
+          /><!--src="../../images/aurelien.galand.jpg" />-->
           <form @submit.prevent="onSubmit" enctype="multipart/form-data">
             <label for="picture" class="picture">Choisir une image</label>
             <div class="fields">
               <input
+                ref="file"
                 id="picture"
                 type="file"
                 accept=".jpg, .jpeg, .png"
                 @change="onSelect"
               />
             </div>
-            <div class="message">
-              <h5>{{ message }}</h5>
-            </div>
           </form>
         </div>
       </div>
       <div class="modale__email">
         <p>Email</p>
-        <input type="text" placeholder="aurelien.galand@gmail.com" />
+        <input type="text" v-model="email" />
       </div>
       <div class="modale__mdp">
         <p>Mot de passe</p>
@@ -57,13 +58,86 @@
 </template>
 
 <script>
+import axios from "axios";
 export default {
   name: "ModaleProfile",
-  props: ["revele", "toggleModale", "userPic"],
+  props: ["revele", "toggleModale", "routeId"],
+  data: () => ({
+    lastname: "",
+    firstname: "",
+    email: "",
+    userPic: "",
+    tempUserPic: "",
+    userId: "",
+    bio: "",
+    file: "",
+  }),
+  methods: {
+    onSelect() {
+      const file = this.$refs.file.files[0];
+      this.file = file;
+      this.tempUserPic = window.URL.createObjectURL(this.file);
+    },
+    getUserInfos() {
+      axios
+        .get("http://localhost:3000/profile/" + this.routeId, {
+          headers: { authorization: this.$cookies.get("token") },
+        })
+        .then((res) => {
+          this.lastname = res.data.user.lastname;
+          this.firstname = res.data.user.firstname;
+          this.email = res.data.user.email;
+          this.bio = res.data.user.bio;
+          this.userPic = res.data.user.userPic;
+          this.tempUserPic = this.userPic;
+          this.userId = res.data.userId;
+          if (this.userId == this.routeId) {
+            this.userIsCurrent = true;
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          this.$router.push("/");
+        });
+    },
+    updateProfile: function () {
+      const formData = new FormData();
+      const userInfos = {
+        lastname: this.lastname,
+        firstname: this.firstname,
+        email: this.email,
+        bio: this.bio,
+        userPic: this.userPic,
+      };
+      formData.append("image", this.file);
+
+      formData.append("user", JSON.stringify(userInfos));
+      axios
+        .put("http://localhost:3000/profile/" + this.routeId, formData, {
+          headers: {
+            Authorization: this.$cookies.get("token"),
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then((res) => {
+          //this.getUserInfos();
+          console.log(res);
+          this.toggleModale();
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+  },
+
+  created() {
+    this.getUserInfos();
+  },
 };
 </script>
 
 <style lang="scss" scoped>
+@import "../scss/Utils/_mixins.scss";
 .bloc-modale {
   a {
     font-family: "Roboto-bold";
@@ -104,10 +178,14 @@ export default {
     color: #333;
     padding: 50px;
     position: fixed;
-    top: 20%;
+    top: 10%;
     display: flex;
     flex-direction: column;
-    width: 40%;
+    @include desktop {
+      max-width: 800px;
+      width: 60%;
+    }
+
     hr {
       width: 90%;
       color: rgb(255, 255, 255);

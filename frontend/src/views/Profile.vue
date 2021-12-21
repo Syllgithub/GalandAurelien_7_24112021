@@ -8,7 +8,7 @@
           ><modale-profile
             :revele="revele"
             :toggleModale="toggleModale"
-            :userPic="userPic"
+            :routeId="this.$route.params.id"
         /></transition>
         <div class="profileInfos__picname">
           <img v-if="!userPic" src="../../images/defaultprofilepic.jpg" />
@@ -17,23 +17,6 @@
             <p class="name">{{ firstname }} {{ lastname }}</p>
             <p class="job">Développeur Web</p>
           </div>
-          <!--<form @submit.prevent="onSubmit" enctype="multipart/form-data">
-            <div class="fields">
-              <input
-                type="file"
-                accept=".jpg, .jpeg, .png"
-                @change="onSelect"
-              />
-            </div>
-            <div class="fields">
-              <button @click="modifyBio()">
-                <i class="fas fa-cog"></i> Valider
-              </button>
-            </div>
-            <div class="message">
-              <h5>{{ message }}</h5>
-            </div>
-          </form>-->
           <button v-if="userIsCurrent" @click="toggleModale">
             <i class="fas fa-cog"></i> Modifier le profil
           </button>
@@ -107,6 +90,7 @@ export default {
   methods: {
     toggleModale: function () {
       this.revele = !this.revele;
+      this.getUserInfos();
     },
     getUserInfos() {
       axios
@@ -132,10 +116,7 @@ export default {
           this.$router.push("/");
         });
     },
-    onSelect() {
-      const file = this.$refs.file.files[0];
-      this.file = file;
-    },
+
     triggerEditing: function () {
       this.isEditing = !this.isEditing;
     },
@@ -176,6 +157,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "../scss/Utils/_mixins.scss";
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.3s;
@@ -185,7 +167,10 @@ export default {
   opacity: 0;
 }
 .profile {
-  width: 80%;
+  @include desktop {
+    width: 90%;
+  }
+
   margin: auto;
   box-shadow: 0px 0px 5px 1px rgb(202, 202, 202);
 }
@@ -237,7 +222,7 @@ export default {
       margin-right: auto;
       width: 80%;
       height: 40px;
-      font-size: 1.1em;
+      font-size: 100%;
       border: 0;
       border-radius: 3px;
       background: rgb(169, 189, 216);

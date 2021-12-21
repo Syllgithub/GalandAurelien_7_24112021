@@ -21,6 +21,7 @@ app.use(express.json()); // parse json bodies in the request object
 app.use("/images", express.static(path.join(__dirname, "images")));
 // Redirect requests to endpoint starting with /posts to postRoutes.js
 app.use("/", require("./routes/userRoutes"));
+app.use("/posts", require("./routes/postsRoutes"));
 
 // Global Error Handler. IMPORTANT function params MUST start with err
 app.use((err, req, res, next) => {

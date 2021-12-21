@@ -100,7 +100,7 @@ export default {
   @include desktop {
     height: 80vh;
     flex-direction: row;
-    width: 80%;
+    //width: 80%;
     margin: auto;
   }
   #nav {
@@ -115,13 +115,17 @@ export default {
   margin-bottom: 50px;
   display: flex;
   flex-direction: column;
+  overflow: auto;
   gap: 10px;
   background-color: white;
   width: 100%;
   //border-radius: 4px;
 
   @include desktop {
-    width: 25%;
+    //height: 600px;
+    height: 90%;
+    //width: 25%;
+    width: 350px;
     box-shadow: 0px 0px 5px 2px rgb(202, 202, 202);
   }
   h1 {
