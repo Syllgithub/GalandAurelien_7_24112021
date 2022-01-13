@@ -1,9 +1,10 @@
-require("dotenv").config(); // ALLOWS ENVIRONMENT VARIABLES TO BE SET ON PROCESS.ENV SHOULD BE AT TOP
+require("dotenv").config(); // Variables d'environnement
 
 const express = require("express");
 const app = express();
 const path = require("path");
 
+// Autorisation CORS
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
@@ -16,14 +17,17 @@ app.use((req, res, next) => {
   );
   next();
 });
+
 // Middleware
-app.use(express.json()); // parse json bodies in the request object
-app.use("/images", express.static(path.join(__dirname, "images")));
-// Redirect requests to endpoint starting with /posts to postRoutes.js
+app.use(express.json()); // Pour les corps de requête en JSON
+app.use("/images", express.static(path.join(__dirname, "images"))); // Chemin des images pour multer
+
+// Création des différentes routes
 app.use("/", require("./routes/userRoutes"));
 app.use("/posts", require("./routes/postsRoutes"));
+app.use("/comments", require("./routes/commentsRoutes"));
 
-// Global Error Handler. IMPORTANT function params MUST start with err
+// Gestion des erreurs du serveur
 app.use((err, req, res, next) => {
   console.log(err.stack);
   console.log(err.name);
@@ -34,6 +38,6 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Listen on pc port
+// Configuration du port d'écoute pour le serveur
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on PORT ${PORT}`));

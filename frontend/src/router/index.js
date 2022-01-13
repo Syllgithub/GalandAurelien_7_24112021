@@ -3,12 +3,13 @@ import Login from "../views/Login.vue";
 import Signup from "../views/Signup.vue";
 import Newsfeed from "../views/Newsfeed.vue";
 import Profile from "../views/Profile.vue";
+import SignupAdmin from "../views/SignupAdmin";
 
 import { useCookies } from "vue3-cookies";
 const { cookies } = useCookies();
 
 function tokenGuard(to, from, next) {
-  if (to.name == "Login" || to.name == "Signup") {
+  if (to.name == "Login" || to.name == "Signup" || to.name == "SignupAdmin") {
     if (cookies.isKey("token")) {
       next("/newsfeed");
     } else next();
@@ -31,6 +32,12 @@ const routes = [
     name: "Signup",
     beforeEnter: tokenGuard,
     component: Signup,
+  },
+  {
+    path: "/sign-upadmin",
+    name: "SignupAdmin",
+    beforeEnter: tokenGuard,
+    component: SignupAdmin,
   },
   {
     path: "/newsfeed",

@@ -3,14 +3,14 @@
     <div class="signup">
       <div id="nav"><Logo /></div>
       <div class="signupform fade-in">
-        <h1>S'inscrire</h1>
+        <h1>INSCRIPTION ADMIN</h1>
         <div class="form">
-          <p><i class="fas fa-passport"></i> ID Entreprise</p>
+          <p>ID Entreprise</p>
           <input type="text" value="GPA-41547-224X" disabled />
         </div>
         <div class="testest">
           <div class="form">
-            <p><i class="fas fa-user"></i> Nom</p>
+            <p>Nom</p>
             <input
               type="text"
               placeholder="Dupont"
@@ -22,12 +22,12 @@
               ref="lastname"
               @change="checkLastname(lastname)"
             />
-            <!--<p v-if="inputLastnameFailed" class="inputFailed">
+            <p v-if="inputLastnameFailed" class="inputFailed">
               Merci de bien vouloir renseigner votre nom.
-            </p>-->
+            </p>
           </div>
           <div class="form">
-            <p><i class="far fa-user"></i> Prénom</p>
+            <p>Prénom</p>
             <input
               type="text"
               placeholder="Jean"
@@ -39,16 +39,13 @@
               ref="firstname"
               @change="checkFirstname(firstname)"
             />
+            <p v-if="inputFirstnameFailed" class="inputFailed">
+              Merci de bien vouloir renseigner votre prénom.
+            </p>
           </div>
         </div>
-        <p
-          v-if="inputFirstnameFailed || inputLastnameFailed"
-          class="inputFailed name"
-        >
-          Merci de bien vouloir renseigner votre nom et votre prénom.
-        </p>
         <div class="form">
-          <p><i class="fas fa-envelope"></i> Adresse email</p>
+          <p>Adresse email</p>
           <input
             type="text"
             placeholder="jean.dupont@groupomania.fr"
@@ -66,7 +63,7 @@
         </div>
 
         <div class="form">
-          <p><i class="fas fa-lock"></i> Mot de passe</p>
+          <p>Mot de passe</p>
           <input
             type="password"
             placeholder="******"
@@ -86,7 +83,7 @@
         </div>
 
         <div class="form">
-          <p><i class="fas fa-lock"></i> Confirmez le mot de passe</p>
+          <p>Confirmez le mot de passe</p>
           <input
             type="password"
             placeholder="******"
@@ -99,7 +96,7 @@
             @change="checkPassword(passwordCheck)"
           />
         </div>
-        <button class="button" @click="signup()">S'inscrire</button>
+        <button class="button" @click="signup()">S'inscrire (ADMIN)</button>
         <p id="err"></p>
         <hr />
         <p class="account">
@@ -120,7 +117,7 @@ export default {
     Logo,
     Footer,
   },
-  name: "Signup",
+  name: "SignupAdmin",
   data: () => ({
     lastname: "",
     firstname: "",
@@ -173,7 +170,7 @@ export default {
       }
     },
     checkLastname: function (lastname) {
-      let nameRegex = new RegExp("^[a-zA-ZÀ-ÿ- ]+$", "g");
+      let nameRegex = new RegExp("^[a-zA-Z- ]+$", "g");
       let testName = nameRegex.test(lastname);
       if (!testName) {
         this.inputLastnameBase = false;
@@ -187,7 +184,7 @@ export default {
       }
     },
     checkFirstname: function (firstname) {
-      let nameRegex = new RegExp("^[a-zA-ZÀ-ÿ- ]+$", "g");
+      let nameRegex = new RegExp("^[a-zA-Z- ]+$", "g");
       let testName = nameRegex.test(firstname);
       if (!testName) {
         this.inputFirstnameBase = false;
@@ -223,7 +220,7 @@ export default {
             firstname: firstname,
             email: email,
             password: password,
-            isAdmin: 0,
+            isAdmin: 1,
           })
           .then((res) => {
             console.log(res);
@@ -242,7 +239,7 @@ export default {
   },
 };
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 @import "../scss/main.scss";
 .signup {
   display: flex;
@@ -288,7 +285,7 @@ export default {
     font-size: 1.5em;
     margin-top: 30px;
     margin-bottom: 20px;
-    color: #000;
+    color: rgb(255, 0, 0);
   }
   hr {
     width: 95%;
@@ -350,14 +347,11 @@ export default {
         outline: none;
       }
     }
-  }
-  .inputFailed {
-    text-align: left;
-    margin: auto;
-    color: red;
-  }
-  .name {
-    width: 80%;
+    .inputFailed {
+      text-align: left;
+      margin: auto;
+      color: red;
+    }
   }
   button {
     margin: auto;
@@ -367,7 +361,7 @@ export default {
     font-size: 1.1em;
     border: 0;
     border-radius: 3px;
-    background: lightsteelblue;
+    background: rgb(255, 0, 0);
     box-shadow: 0 0 3px 1px lightgray;
     color: #fff;
     cursor: pointer;

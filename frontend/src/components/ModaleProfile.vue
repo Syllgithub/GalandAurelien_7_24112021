@@ -17,7 +17,9 @@
       <div class="modale__profilePic">
         <p>Photo de profil</p>
         <div class="pic">
+          <img v-if="!tempUserPic" src="../../images/defaultprofilepic.jpg" />
           <img
+            v-else
             :src="tempUserPic"
             :key="tempUserPic"
           /><!--src="../../images/aurelien.galand.jpg" />-->
@@ -45,7 +47,7 @@
       </div>
       <div class="modale__delete">
         <p>Compte</p>
-        <a href="#">Supprimer le compte</a>
+        <button @click="deleteUser()">Supprimer le compte</button>
       </div>
 
       <div class="modale__buttons">
@@ -73,6 +75,24 @@ export default {
     file: "",
   }),
   methods: {
+    deleteUser: function () {
+      if (window.confirm("Etes vous sur ? Cette action est irreversible.")) {
+        axios
+          .delete("http://localhost:3000/profile/" + this.routeId, {
+            headers: { authorization: this.$cookies.get("token") },
+          })
+          .then((res) => {
+            console.log(res);
+            this.$cookies.remove("token");
+          })
+          .then(() => {
+            this.$router.push("/");
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+    },
     onSelect() {
       const file = this.$refs.file.files[0];
       this.file = file;
@@ -181,6 +201,7 @@ export default {
     top: 10%;
     display: flex;
     flex-direction: column;
+    width: 70%;
     @include desktop {
       max-width: 800px;
       width: 60%;
@@ -204,25 +225,41 @@ export default {
       font-size: 1.1em;
     }
     &__name {
-      width: 90%;
+      width: 100%;
       display: flex;
+      @include desktop {
+        width: 90%;
+        flex-direction: row;
+      }
+      flex-direction: column;
       justify-content: space-between;
       align-items: center;
       margin: auto;
-      height: 70px;
+      @include desktop {
+        height: 70px;
+      }
       p {
         display: flex;
       }
       input {
-        width: 35%;
-        height: 40%;
+        @include desktop {
+          width: 35%;
+          height: 40%;
+          margin-top: 0;
+        }
+        height: 30px;
+        width: 100%;
+        margin-top: 5px;
         border: 0;
         border-radius: 2px;
 
         box-shadow: 0 0 1px 1px lightgray;
       }
       div {
-        width: 48%;
+        width: 100%;
+        @include desktop {
+          width: 48%;
+        }
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -231,21 +268,38 @@ export default {
     &__profilePic {
       display: flex;
       width: 90%;
-      height: 70px;
+      @include desktop {
+        height: 70px;
+      }
       margin: auto;
       align-items: center;
       justify-content: flex-start;
+      @include desktop {
+        flex-direction: row;
+      }
+      flex-direction: column;
       img {
-        width: 30%;
-        height: 62px;
+        @include desktop {
+          width: 30%;
+          height: 62px;
+        }
+        width: 75px;
+        height: 75px;
+
         object-fit: cover;
         border-radius: 50%;
       }
       .pic {
         display: flex;
-        width: 30%;
+        @include desktop {
+          width: 30%;
+        }
         align-items: center;
         justify-content: space-between;
+        @include desktop {
+          flex-direction: row;
+        }
+        flex-direction: column;
         input {
           display: none;
         }
@@ -257,19 +311,38 @@ export default {
       }
       p {
         text-align: left;
-        width: 21.5%;
+        margin-top: 10px;
+        @include desktop {
+          margin-top: 0;
+          width: 21.5%;
+        }
       }
     }
     &__email {
-      width: 90%;
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin: auto;
-      height: 70px;
+      margin-top: 10px;
+      width: 100%;
+      @include desktop {
+        width: 90%;
+        height: 70px;
+        margin-top: 0;
+      }
+      @include desktop {
+        flex-direction: row;
+      }
+      flex-direction: column;
       input {
-        width: 77%;
-        height: 40%;
+        @include desktop {
+          width: 77%;
+          height: 40%;
+          margin-top: 0;
+        }
+        margin-top: 10px;
+        width: 100%;
+        height: 30px;
         border: 0;
         border-radius: 2px;
 
@@ -277,41 +350,87 @@ export default {
       }
     }
     &__mdp {
-      width: 90%;
+      width: 100%;
       display: flex;
       margin: auto;
-      height: 70px;
+
       align-items: center;
+      @include desktop {
+        flex-direction: row;
+        width: 90%;
+        height: 70px;
+      }
+      flex-direction: column;
       p {
+        display: none;
         text-align: left;
-        width: 21.5%;
+        margin-top: 10px;
+        @include desktop {
+          display: initial;
+          width: 21.5%;
+          margin-top: 0;
+        }
+      }
+      a {
+        margin-top: 10px;
+        @include desktop {
+          margin-top: 0;
+        }
       }
     }
     &__delete {
-      width: 90%;
       display: flex;
       margin: auto;
-      height: 70px;
+      width: 100%;
       align-items: center;
-      p {
-        text-align: left;
-        width: 21.5%;
+      @include desktop {
+        flex-direction: row;
+        width: 90%;
+        height: 70px;
       }
-      a {
+      flex-direction: column;
+      p {
+        display: none;
+        @include desktop {
+          display: initial;
+          text-align: left;
+          width: 21.5%;
+        }
+      }
+      button {
+        margin: 0;
+        padding: 0;
+        font-size: 1em;
+        background: #f1f1f1;
+        border: 0;
+        font-family: "Roboto-bold";
         color: red;
+        cursor: pointer;
+        margin-top: 10px;
+        @include desktop {
+          margin-top: 0;
+        }
       }
     }
     &__buttons {
-      width: 90%;
       display: flex;
       margin: auto;
       gap: 10px;
-      flex-direction: column;
-      justify-content: center;
-      align-items: flex-end;
+      width: 90%;
+      @include desktop {
+        align-items: flex-end;
+        flex-direction: column;
+        justify-content: center;
+      }
       button {
-        width: 35%;
-        height: 40px;
+        width: 100%;
+        margin-top: 15px;
+        height: 50px;
+        @include desktop {
+          margin-top: 0;
+          width: 35%;
+          height: 40px;
+        }
         font-size: 1.1em;
         border: 0;
         border-radius: 3px;

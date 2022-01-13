@@ -2,7 +2,12 @@
   <header>
     <div class="nav">
       <div class="nav__menu">
-        <img src="../../images/icon-left-font-monochrome-black.svg" alt="" />
+        <img
+          class="desktoplogo"
+          src="../../images/icon-left-font-monochrome-black.svg"
+          alt=""
+        />
+        <img class="mobilelogo" src="../../images/icon-black.png" alt="" />
         <div class="search">
           <i class="fas fa-search fa-lg"></i
           ><input type="text" placeholder="Rechercher..." />
@@ -38,6 +43,7 @@ export default {
 @import "../scss/Utils/_mixins.scss";
 .nav {
   position: fixed;
+  width: 100%;
   box-shadow: 0 4px 3px -3px rgb(202, 202, 202);
   height: 7vh;
   background: #fff;
@@ -57,13 +63,24 @@ export default {
     justify-content: space-between;
     color: #2c3e50;
     font-size: 1em;
-    img {
-      width: 15%;
-      margin-left: 15px;
+    .desktoplogo {
+      display: none;
+      @include desktop {
+        display: initial;
+        width: 15%;
+        margin-left: 15px;
+      }
+    }
+    .mobilelogo {
+      display: initial;
+      width: 12%;
+      @include desktop {
+        display: none;
+      }
     }
     &--buttons {
       height: 7vh;
-      width: 25%;
+      width: 70%;
       justify-content: space-around;
       display: flex;
       align-items: center;
@@ -73,6 +90,9 @@ export default {
         &.router-link-exact-active {
           color: #2a3d94;
         }
+      }
+      @include desktop {
+        width: 20%;
       }
     }
     button {
@@ -91,28 +111,30 @@ export default {
       }
     }
     .search {
-      //border: 1px solid grey;
-      display: flex;
-      width: 20%;
-      height: 50%;
-      align-items: center;
-      border-radius: 3px;
-      box-shadow: 0 0 1px 1px lightgray;
-      i {
-        margin-left: 10px;
-      }
-      input {
-        border: 0;
-        margin-left: 15px;
-        font-size: 1em;
-        &::placeholder {
-          color: rgb(185, 185, 185);
+      display: none;
+      @include desktop {
+        display: flex;
+        width: 20%;
+        height: 50%;
+        align-items: center;
+        border-radius: 3px;
+        box-shadow: 0 0 1px 1px lightgray;
+        i {
+          margin-left: 10px;
         }
-        &::-moz-placeholder {
-          opacity: 1;
-        }
-        &:focus {
-          outline: none;
+        input {
+          border: 0;
+          margin-left: 15px;
+          font-size: 1em;
+          &::placeholder {
+            color: rgb(185, 185, 185);
+          }
+          &::-moz-placeholder {
+            opacity: 1;
+          }
+          &:focus {
+            outline: none;
+          }
         }
       }
     }

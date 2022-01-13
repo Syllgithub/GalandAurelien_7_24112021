@@ -1,6 +1,7 @@
 const User = require("../models/User");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
+const Post = require("../models/Posts");
+const bcrypt = require("bcrypt"); // Utilisation de bcrypt pour hasher les mots de passes
+const jwt = require("jsonwebtoken"); // Utilisation de jwt pour créer un token d'authentification
 const fs = require("fs");
 
 exports.login = async (req, res, next) => {
@@ -29,15 +30,25 @@ exports.signup = (req, res, next) => {
       req.body.lastname,
       req.body.firstname,
       req.body.email,
-      hash
+      hash,
+      req.body.isAdmin
     );
-    user = user.save();
-    res.status(201).json({ message: "Utilisateur créé !" });
+    user = user
+      .save()
+      .then(() => {
+        res.status(201).json({ message: "Utilisateur créé !" });
+      })
+      .catch((err) => {
+        if (err.errno == 1062) {
+          // L'erreur 1062 correspond a une duplication d'entrée
+          let message = "L'adresse email est déjà utilisée.";
+          res.status(400).json({ error: message });
+        } else res.status(401).json({ err });
+      });
   });
 };
 
 exports.profile = async (req, res, next) => {
-  //console.log(req.params.id);
   if (req.params.id) {
     const [user, _] = await User.findById(req.params.id);
     const token = req.headers.authorization;
@@ -49,7 +60,6 @@ exports.profile = async (req, res, next) => {
     const decodedToken = jwt.verify(token, "PZCTBIKQDOE");
     const userId = decodedToken.userId;
     const [user, _] = await User.findById(userId);
-    console.log(user[0]);
     res.status(201).json({ user: user[0], userId: userId });
   }
 };
@@ -71,9 +81,8 @@ exports.modifyProfile = async (req, res, next) => {
       await User.updateUser(user);
     } else {
       // Refaire requete sql pour userPic + refacto
-
-      const previousUserPic = userinfos.userPic.split("/images/")[1];
-      console.log(previousUserPic);
+      const [userReq, _] = await User.findById(req.params.id);
+      const previousUserPic = userReq[0].userPic.split("/images/")[1];
 
       const user = {
         id: req.params.id,
@@ -85,7 +94,7 @@ exports.modifyProfile = async (req, res, next) => {
           req.file.filename
         }`,
       };
-      User.updateUser(user);
+      await User.updateUser(user);
       fs.unlink("images/" + previousUserPic, () => {});
     }
   } else {
@@ -101,4 +110,18 @@ exports.modifyProfile = async (req, res, next) => {
   }
 
   res.status(201).json({ message: "Utilisateur modifié !" });
+};
+
+exports.deleteUser = async (req, res, next) => {
+  const [userReq, _] = await User.findById(req.params.id);
+  // On vérifie si l'utilisateur a une photo de profil pour la supprimer
+  if (userReq[0].userPic) {
+    const previousUserPic = userReq[0].userPic.split("/images/")[1];
+    fs.unlink("images/" + previousUserPic, () => {});
+  }
+
+  await User.deleteUser(req.params.id);
+  await Post.deletePostsByUserId(req.params.id);
+
+  res.status(201).json({ message: "Utilisateur supprimé !" });
 };

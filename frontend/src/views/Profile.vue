@@ -12,10 +12,10 @@
         /></transition>
         <div class="profileInfos__picname">
           <img v-if="!userPic" src="../../images/defaultprofilepic.jpg" />
-          <img :src="userPic" :key="userPic" />
+          <img v-else :src="userPic" :key="userPic" />
           <div class="userInfos">
             <p class="name">{{ firstname }} {{ lastname }}</p>
-            <p class="job">Développeur Web</p>
+            <p class="job" v-if="paramsUserId == 8">Développeur Web</p>
           </div>
           <button v-if="userIsCurrent" @click="toggleModale">
             <i class="fas fa-cog"></i> Modifier le profil
@@ -49,6 +49,47 @@
           </div>
           <div class="profilePosts">
             <h1>Mes posts</h1>
+            <div class="posts" v-for="posts in allPosts.posts" :key="posts.id">
+              <div class="post">
+                <div class="name">
+                  <img
+                    v-if="!posts.userPic"
+                    src="../../images/defaultprofilepic.jpg"
+                  />
+                  <img v-else :src="posts.userPic" />
+                  <div class="bloc-infos">
+                    <div class="bloc-username">
+                      <div class="username">
+                        <router-link :to="`/profile/${posts.user_id}`"
+                          >{{ posts.firstname }}
+                          {{ posts.lastname }}</router-link
+                        >
+                      </div>
+
+                      <div class="date">{{ posts.postDate }}</div>
+                    </div>
+                    <button
+                      v-if="posts.user_id == userId"
+                      @click="deletePost(posts.id)"
+                    >
+                      <i class="fas fa-trash fa-lg"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="post-content">{{ posts.content }}</div>
+                <div class="sub-content">
+                  <div class="like"><i class="far fa-thumbs-up fa-lg"></i></div>
+                  <div class="comments" @click="toggleComments">
+                    Commentaires
+                  </div>
+                </div>
+                <div v-if="commentsOn">
+                  <hr />
+                  ...Commentaires
+                  <hr />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -83,15 +124,26 @@ export default {
     message: "",
     revele: false,
     userPic: "",
+    allPosts: "",
   }),
   created() {
     this.getUserInfos();
+    this.getPosts();
   },
   methods: {
+    getPosts: function () {
+      axios
+        .get(`http://localhost:3000/posts/${this.$route.params.id}`)
+        .then((res) => {
+          this.allPosts = res.data;
+          console.log(this.allPosts);
+        });
+    },
     toggleModale: function () {
       this.revele = !this.revele;
       this.getUserInfos();
     },
+
     getUserInfos() {
       axios
         .get("http://localhost:3000/profile/" + this.$route.params.id, {
@@ -122,6 +174,9 @@ export default {
     },
     modifyBio: function () {
       console.log(this.userPic);
+      if (!this.userPic) {
+        this.userPic = "";
+      }
       const formData = new FormData();
       const userInfos = {
         lastname: this.lastname,
@@ -167,6 +222,7 @@ export default {
   opacity: 0;
 }
 .profile {
+  width: 100%;
   @include desktop {
     width: 90%;
   }
@@ -179,23 +235,36 @@ export default {
   display: flex;
   flex-direction: column;
   //width: 80%;
+
   background: #f4f5fc;
   margin: auto;
 }
 .profileInfos {
+  margin: auto;
   margin-top: 10vh;
-  width: 100%;
+  @include desktop {
+    width: 80%;
+  }
   display: flex;
+  flex-direction: column;
+  @include desktop {
+    flex-direction: row;
+  }
   justify-content: space-around;
 
   &__picname {
     background-color: #fff;
+    @include desktop {
+      border-radius: 4px;
+    }
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
     height: 450px;
-    width: 15%;
+    @include desktop {
+      width: 15%;
+    }
     box-shadow: 0px 0px 5px 2px rgb(202, 202, 202);
     .userInfos {
       width: 80%;
@@ -211,7 +280,13 @@ export default {
     }
     img {
       box-shadow: 0px 0px 5px 2px rgb(202, 202, 202);
-      width: 100%;
+      margin-top: 20px;
+      @include desktop {
+        margin-top: 0;
+        width: 100%;
+        border-radius: 4px 4px 0 0;
+      }
+      width: 50%;
       object-fit: cover;
       height: 60%;
     }
@@ -239,10 +314,14 @@ export default {
     //background-color: #fff;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    height: 800px;
-    width: 60%;
-    margin-bottom: 30px;
+    margin-top: 20px;
+    height: 600px;
+    @include desktop {
+      margin-top: 0;
+      width: 50%;
+    }
+
+    gap: 20px;
     h1 {
       text-align: left;
       width: 90%;
@@ -250,6 +329,7 @@ export default {
       margin-top: 20px;
     }
     .bio {
+      border-radius: 4px;
       background-color: #fff;
       box-shadow: 0px 0px 5px 2px rgb(202, 202, 202);
       height: 40%;
@@ -303,10 +383,100 @@ export default {
 }
 
 .profilePosts {
-  //border: 1px solid red;
+  border-radius: 4px;
+  overflow: auto;
   width: 100%;
   height: 50%;
   background-color: #fff;
   box-shadow: 0px 0px 5px 2px rgb(202, 202, 202);
+  h1 {
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgb(228, 228, 228);
+  }
+  .posts {
+    .post {
+      box-shadow: 0px 0px 3px 3px rgb(219, 219, 219);
+      background: white;
+      width: 90%;
+      margin: auto;
+      margin-top: 20px;
+      margin-bottom: 20px;
+      .post-content {
+        text-align: left;
+        display: flex;
+        padding-top: 15px;
+        padding-bottom: 15px;
+        padding-left: 10px;
+        padding-right: 10px;
+        align-items: flex-start;
+        white-space: pre-line;
+      }
+      .sub-content {
+        height: 50px;
+        padding-left: 10px;
+        padding-right: 10px;
+        align-items: center;
+        display: flex;
+        justify-content: space-between;
+        .comments {
+          cursor: pointer;
+        }
+      }
+      .name {
+        height: 60px;
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        padding-left: 10px;
+        .bloc-infos {
+          width: 100%;
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          .date {
+            font-size: 0.9em;
+            color: grey;
+          }
+          .bloc-username {
+            display: flex;
+
+            flex-direction: column;
+            align-items: flex-start;
+          }
+          button {
+            border: 0;
+            background: 0;
+            cursor: pointer;
+            margin-right: 5px;
+            color: #2c3e50;
+            &:hover {
+              opacity: 0.75;
+            }
+          }
+        }
+
+        .username {
+          font-family: "Roboto-bold";
+          a {
+            text-decoration: none;
+            color: #2c3e50;
+            &.router-link-exact-active {
+              color: #2c3e50;
+            }
+          }
+        }
+        img {
+          border-radius: 50%;
+          width: 50px;
+          height: 50px;
+          //max-width: 50px;
+          //height: 60%;
+          // height: auto;
+
+          object-fit: cover;
+        }
+      }
+    }
+  }
 }
 </style>
