@@ -3,11 +3,11 @@ const User = require("../models/User");
 const jwt = require("jsonwebtoken"); // Utilisation de jwt pour décoder le token user
 
 exports.createComment = async (req, res, next) => {
-  let comment = new Comments(
-    req.body.postId,
-    req.body.userId,
-    req.body.content
-  );
+  const token = req.headers.authorization;
+  const decodedToken = jwt.verify(token, "PZCTBIKQDOE");
+  const userId = decodedToken.userId;
+
+  let comment = new Comments(req.body.postId, userId, req.body.content);
 
   comment = await comment.save();
 

@@ -1,7 +1,7 @@
 <template>
   <div class="newsfeed">
     <div class="content">
-      <div class="nav"><Navigation /></div>
+      <div class="nav"><Navigation :userId="userId" /></div>
       <div class="profile">
         <button class="profile-btn" @click="toProfile()">
           <img v-if="!userPic" src="../../images/defaultprofilepic.jpg" />
@@ -161,10 +161,14 @@ export default {
       this.commentsOn[index] = !this.commentsOn[index];
     },
     deletePost: function (id) {
-      axios.delete(`http://localhost:3000/posts/${id}`).then((res) => {
-        console.log(res);
-        this.getPosts();
-      });
+      axios
+        .delete(`http://localhost:3000/posts/${id}`, {
+          headers: { authorization: this.$cookies.get("token") },
+        })
+        .then((res) => {
+          console.log(res);
+          this.getPosts();
+        });
     },
     deleteComment: function (id) {
       axios
@@ -178,10 +182,13 @@ export default {
     },
     createPost: function () {
       axios
-        .post("http://localhost:3000/posts/", {
-          userId: this.userId,
-          content: this.postContent,
-        })
+        .post(
+          "http://localhost:3000/posts/",
+          { content: this.postContent },
+          {
+            headers: { authorization: this.$cookies.get("token") },
+          }
+        )
         .then((res) => {
           console.log(res);
           this.getPosts();
@@ -195,11 +202,14 @@ export default {
     },
     createComment: function (postId) {
       axios
-        .post("http://localhost:3000/comments/", {
-          postId: postId,
-          userId: this.userId,
-          content: this.commentContent,
-        })
+        .post(
+          "http://localhost:3000/comments/",
+          {
+            postId: postId,
+            content: this.commentContent,
+          },
+          { headers: { authorization: this.$cookies.get("token") } }
+        )
         .then((res) => {
           console.log(res);
           this.getPosts();
@@ -213,12 +223,10 @@ export default {
     getPosts: function () {
       axios.get("http://localhost:3000/posts/").then((res) => {
         this.allPosts = res.data;
-        this.allPosts.posts.forEach((element) => {
-          console.log(element.postId);
+        this.allPosts.posts.forEach(() => {
           this.commentsOn.push(false);
         });
       });
-      console.log(this.postest);
     },
   },
 };
@@ -241,6 +249,7 @@ export default {
     // background: #f4f5fc;
     display: flex;
     flex-direction: column;
+
     .createPost {
       display: flex;
       flex-direction: column;
@@ -465,7 +474,12 @@ export default {
 }
 .profile {
   display: none;
+  //position: fixed;
+  hr {
+    display: none;
+  }
   @include desktop {
+    margin-top: 0;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -477,6 +491,7 @@ export default {
     height: auto;
     right: 12vh;
     hr {
+      display: initial;
       width: 70%;
       margin-top: 30px;
       color: rgb(255, 255, 255);

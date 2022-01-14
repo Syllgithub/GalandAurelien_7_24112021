@@ -1,15 +1,23 @@
 const Posts = require("../models/Posts");
+const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 
 exports.createPost = async (req, res, next) => {
-  // lire depuis le token
-  let post = new Posts(req.body.userId, req.body.content);
   try {
-    post = await post.save();
+    const token = req.headers.authorization;
+    const decodedToken = jwt.verify(token, "PZCTBIKQDOE");
+    const userId = decodedToken.userId;
+
+    let post = new Posts(userId, req.body.content);
+    try {
+      post = await post.save();
+    } catch (err) {
+      console.log(err);
+    }
+    res.status(201).json({ message: "Post créé !" });
   } catch (err) {
-    console.log(err);
+    res.status(401).json({ error: err | "Requete non authentifiée !" });
   }
-  res.status(201).json({ message: "Post créé !" });
 };
 
 exports.getAllPosts = async (req, res, next) => {
@@ -64,6 +72,17 @@ exports.getUserIdPosts = async (req, res, next) => {
 };
 
 exports.deletePost = async (req, res, next) => {
-  await Posts.deletePost(req.params.id);
-  res.status(201).json({ message: "Post supprimé !" });
+  const token = req.headers.authorization;
+  const decodedToken = jwt.verify(token, "PZCTBIKQDOE");
+  const userId = decodedToken.userId;
+
+  const [user, _] = await User.findById(userId);
+  const [post, __] = await Posts.findPostById(req.params.id);
+
+  if (post[0].userId == userId || user[0].isAdmin == 1) {
+    await Posts.deletePost(req.params.id);
+    res.status(201).json({ message: "Post supprimé !" });
+  } else {
+    res.status(401).json({ error: "Requete non autorisée !" });
+  }
 };

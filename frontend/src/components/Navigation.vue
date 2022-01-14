@@ -16,8 +16,9 @@
           <router-link to="/newsfeed"
             ><i class="fas fa-home fa-lg"></i
           ></router-link>
+          <i @click="toProfile()" class="fas fa-user fa-lg"></i>
           <i class="fas fa-bell fa-lg"></i>
-          <i class="fas fa-user-friends fa-lg"></i>
+
           <button class="disconnect" @click="disconnect()">
             Déconnexion <i class="fas fa-sign-out-alt fa-lg"></i>
           </button>
@@ -35,7 +36,11 @@ export default {
       this.$cookies.remove("token");
       this.$router.push("/");
     },
+    toProfile: function () {
+      this.$router.push("/profile/" + this.userId);
+    },
   },
+  props: ["userId"],
 };
 </script>
 
@@ -74,6 +79,7 @@ export default {
     .mobilelogo {
       display: initial;
       width: 12%;
+      max-width: 60px;
       @include desktop {
         display: none;
       }
@@ -84,6 +90,9 @@ export default {
       justify-content: space-around;
       display: flex;
       align-items: center;
+      .fa-user {
+        cursor: pointer;
+      }
       a {
         color: #2c3e50;
 
