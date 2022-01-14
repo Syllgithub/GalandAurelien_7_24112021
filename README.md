@@ -17,7 +17,7 @@ DB_PASSWORD=
 ```
 * Remplissez les champs ci-dessus en fonction de votre base de données 
 * Lancez npm -install 
-* Lancez npm run dev 
+* Lancez npm run start
 
 #### Dans le dossier frontend
 * Lancez npm -install
