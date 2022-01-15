@@ -4,23 +4,32 @@
       <div class="nav"><Navigation :userId="userId" /></div>
       <div class="profile">
         <button class="profile-btn" @click="toProfile()">
-          <img v-if="!userPic" src="../../images/defaultprofilepic.jpg" />
-          <img v-else :src="userPic" />
+          <img
+            v-if="!userPic"
+            src="../../images/defaultprofilepic.jpg"
+            alt="Photo de profil par défaut"
+          />
+          <img v-else :src="userPic" alt="Photo de profil" />
           <p>{{ firstname }} {{ lastname }}</p>
         </button>
         <hr />
       </div>
 
       <div class="createPost">
-        <div class="write">
-          <img v-if="!userPic" src="../../images/defaultprofilepic.jpg" />
-          <img v-else :src="userPic" />
+        <div class="write" id="write">
+          <img
+            v-if="!userPic"
+            src="../../images/defaultprofilepic.jpg"
+            alt="Photo de profil par défaut"
+          />
+          <img v-else :src="userPic" alt="Photo de profil" />
           <textarea
             @input="resize($event)"
             rows="1"
             cols="50"
             v-model="postContent"
             placeholder="Ecrire quelque chose..."
+            aria-labelledby="write"
           >
           </textarea>
         </div>
@@ -36,8 +45,9 @@
             <img
               v-if="!posts.userPic"
               src="../../images/defaultprofilepic.jpg"
+              alt="Photo de profil par défaut"
             />
-            <img v-else :src="posts.userPic" />
+            <img v-else :src="posts.userPic" alt="Photo de profil" />
             <div class="bloc-infos">
               <div class="bloc-username">
                 <div class="username">
@@ -52,6 +62,7 @@
               <button
                 v-if="posts.postUserID == userId || isAdmin === 1"
                 @click="deletePost(posts.postId)"
+                aria-label="Supprimer un post"
               >
                 <i class="fas fa-trash fa-lg"></i>
               </button>
@@ -64,7 +75,11 @@
               Commentaires
             </div>
           </div>
-          <div v-if="commentsOn[index]" class="comment-content">
+          <div
+            v-if="commentsOn[index]"
+            class="comment-content"
+            id="comment-form"
+          >
             <textarea
               class="commentTextArea"
               @input="resize($event)"
@@ -73,14 +88,20 @@
               placeholder="Ecrire un commentaire..."
               @keyup.enter.exact="createComment(posts.postId)"
               v-model="commentContent"
+              aria-labelledby="comment-form"
             ></textarea>
             <div v-for="comments in posts.comments" :key="comments">
               <div class="comment">
                 <img
                   v-if="!comments.commentUserPic"
                   src="../../images/defaultprofilepic.jpg"
+                  alt="Photo de profil par défaut"
                 />
-                <img v-else :src="comments.commentUserPic" />
+                <img
+                  v-else
+                  :src="comments.commentUserPic"
+                  alt="Photo de profil"
+                />
                 <div class="user-comment">
                   <div class="bloc-username">
                     <div class="username">
@@ -97,6 +118,7 @@
                 <button
                   v-if="comments.commentUserId == userId || isAdmin === 1"
                   @click="deleteComment(comments.commentId)"
+                  aria-label="Supprimer un commentaire"
                 >
                   <i class="fas fa-trash fa-lg"></i>
                 </button>
@@ -300,7 +322,7 @@ export default {
         border: 0;
         width: 20%;
         height: 30px;
-        background: lightsteelblue;
+        background: #627899;
         color: #fff;
         font-size: 1.1em;
         border-radius: 4px;
@@ -427,7 +449,7 @@ export default {
             align-items: flex-start;
             .date {
               font-size: 0.9em;
-              color: grey;
+              color: rgb(110, 110, 110);
             }
             .bloc-username {
               display: flex;

@@ -119,9 +119,8 @@ exports.deleteUser = async (req, res, next) => {
     const previousUserPic = userReq[0].userPic.split("/images/")[1];
     fs.unlink("images/" + previousUserPic, () => {});
   }
-
-  await User.deleteUser(req.params.id);
   await Post.deletePostsByUserId(req.params.id);
+  await User.deleteUser(req.params.id);
 
   res.status(201).json({ message: "Utilisateur supprimé !" });
 };

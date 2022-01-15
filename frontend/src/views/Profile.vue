@@ -11,11 +11,15 @@
             :routeId="this.$route.params.id"
         /></transition>
         <div class="profileInfos__picname">
-          <img v-if="!userPic" src="../../images/defaultprofilepic.jpg" />
-          <img v-else :src="userPic" :key="userPic" />
+          <img
+            v-if="!userPic"
+            src="../../images/defaultprofilepic.jpg"
+            alt="Photo de profil par défaut"
+          />
+          <img v-else :src="userPic" :key="userPic" alt="Photo de profil" />
           <div class="userInfos">
             <p class="name">{{ firstname }} {{ lastname }}</p>
-            <p class="job" v-if="paramsUserId == 8">Développeur Web</p>
+            <p class="job">Utilisateur</p>
           </div>
           <button v-if="userIsCurrent" @click="toggleModale">
             <i class="fas fa-cog"></i> Modifier le profil
@@ -38,6 +42,7 @@
                 v-model="bio"
                 rows="10"
                 cols="50"
+                aria-label="Entrer une description"
               ></textarea>
               <p v-else class="bioRender">{{ bio }}</p>
               <div class="editButton">
@@ -55,8 +60,9 @@
                   <img
                     v-if="!posts.userPic"
                     src="../../images/defaultprofilepic.jpg"
+                    alt="Photo de profil par défaut"
                   />
-                  <img v-else :src="posts.userPic" />
+                  <img v-else :src="posts.userPic" alt="Photo de profil" />
                   <div class="bloc-infos">
                     <div class="bloc-username">
                       <div class="username">
@@ -71,6 +77,7 @@
                     <button
                       v-if="posts.user_id == userId"
                       @click="deletePost(posts.id)"
+                      aria-label="Supprimer un post"
                     >
                       <i class="fas fa-trash fa-lg"></i>
                     </button>
@@ -223,6 +230,7 @@ export default {
 }
 .profile {
   width: 100%;
+
   @include desktop {
     width: 90%;
   }
@@ -232,6 +240,7 @@ export default {
 }
 .profileContainer {
   //height: 500px;
+
   display: flex;
   flex-direction: column;
   //width: 80%;
@@ -241,7 +250,9 @@ export default {
 }
 .profileInfos {
   margin: auto;
+  width: 100%;
   margin-top: 10vh;
+
   @include desktop {
     width: 80%;
   }
@@ -259,15 +270,17 @@ export default {
     }
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: flex-start;
+    gap: 30px;
     align-items: center;
-    height: 450px;
+    height: 70%;
     @include desktop {
       width: 15%;
     }
     box-shadow: 0px 0px 5px 2px rgb(202, 202, 202);
     .userInfos {
       width: 80%;
+      padding-bottom: 20px;
     }
     .name {
       font-family: "Roboto-bold";
@@ -288,7 +301,7 @@ export default {
       }
       width: 50%;
       object-fit: cover;
-      height: 60%;
+      height: 270px;
     }
 
     button {
@@ -300,7 +313,7 @@ export default {
       font-size: 100%;
       border: 0;
       border-radius: 3px;
-      background: rgb(169, 189, 216);
+      background: #627899;
       box-shadow: 0 0 3px 1px lightgray;
       color: #fff;
       cursor: pointer;
@@ -312,6 +325,7 @@ export default {
   }
   &__desc {
     //background-color: #fff;
+
     display: flex;
     flex-direction: column;
     margin-top: 20px;
@@ -340,7 +354,7 @@ export default {
         text-align: left;
         margin: auto;
         margin-top: 20px;
-        height: 200px;
+        height: 150px;
         white-space: pre-line;
         overflow: auto;
       }
@@ -360,7 +374,7 @@ export default {
         font-size: 1.1em;
         border: 0;
         border-radius: 3px;
-        background: rgb(169, 189, 216);
+        background: #627899;
         box-shadow: 0 0 3px 1px lightgray;
         color: #fff;
         cursor: pointer;
@@ -377,7 +391,7 @@ export default {
       resize: none;
       outline: none;
       width: 90%;
-      height: 150px;
+      height: 100px;
     }
   }
 }
@@ -435,7 +449,7 @@ export default {
           align-items: flex-start;
           .date {
             font-size: 0.9em;
-            color: grey;
+            color: rgb(110, 110, 110);
           }
           .bloc-username {
             display: flex;

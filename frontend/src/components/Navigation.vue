@@ -8,12 +8,18 @@
           alt=""
         />
         <img class="mobilelogo" src="../../images/icon-black.png" alt="" />
-        <div class="search">
+        <div class="search" id="search">
           <i class="fas fa-search fa-lg"></i
-          ><input type="text" placeholder="Rechercher..." />
+          ><input
+            type="text"
+            placeholder="Rechercher..."
+            aria-labelledby="search"
+          />
         </div>
         <div class="nav__menu--buttons">
-          <router-link to="/newsfeed"
+          <router-link
+            to="/newsfeed"
+            aria-label="Se rendre sur la page d'accueil"
             ><i class="fas fa-home fa-lg"></i
           ></router-link>
           <i @click="toProfile()" class="fas fa-user fa-lg"></i>
