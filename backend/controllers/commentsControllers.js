@@ -29,3 +29,19 @@ exports.deleteComment = async (req, res, next) => {
     res.status(401).json({ error: "Requete non autorisée !" });
   }
 };
+
+exports.updateComment = async (req, res, next) => {
+  const token = req.headers.authorization;
+  const decodedToken = jwt.verify(token, "PZCTBIKQDOE");
+  const userId = decodedToken.userId;
+
+  const [user, _] = await User.findById(userId);
+  const [comment, __] = await Comments.findCommentById(req.params.id);
+
+  if (comment[0].userId == userId || user[0].isAdmin == 1) {
+    await Comments.editCommentById(req.params.id, req.body.content);
+    res.status(200).json({ message: "Commentaire modifié !" });
+  } else {
+    res.status(401).json({ error: "Requete non autorisée !" });
+  }
+};

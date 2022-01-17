@@ -42,6 +42,10 @@ class Posts {
     return db.execute(sql);
   }
 
+  static editPostById(postId, content) {
+    let sql = `UPDATE posts SET content = "${content}" WHERE id=${postId};`;
+    return db.execute(sql);
+  }
   static deletePost(id) {
     let sql = `DELETE FROM posts WHERE id = ${id};`;
 

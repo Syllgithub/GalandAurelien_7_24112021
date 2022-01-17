@@ -39,6 +39,7 @@
         class="posts"
         v-for="(posts, index) in allPosts.posts"
         :key="posts.postId"
+        :set="(globalIndex = 0)"
       >
         <div class="post">
           <div class="name">
@@ -59,18 +60,38 @@
 
                 <div class="date">{{ posts.postDate }}</div>
               </div>
-              <button
-                v-if="posts.postUserID == userId || isAdmin === 1"
-                @click="deletePost(posts.postId)"
-                aria-label="Supprimer un post"
-              >
-                <i class="fas fa-trash fa-lg"></i>
-              </button>
+              <div>
+                <i
+                  class="fas fa-pen"
+                  @click="triggerEditPosts(index)"
+                  v-if="posts.postUserID == userId || isAdmin === 1"
+                ></i>
+                <button
+                  v-if="posts.postUserID == userId || isAdmin === 1"
+                  @click="deletePost(posts.postId)"
+                  aria-label="Supprimer un post"
+                >
+                  <i class="fas fa-trash fa-lg"></i>
+                </button>
+              </div>
             </div>
           </div>
-          <div class="post-content">{{ posts.postContent }}</div>
+          <div class="onEditingPost" v-if="isEditingPost[index]">
+            <textarea
+              class="postEdit"
+              v-if="isEditingPost[index]"
+              v-model="posts.postContent"
+              rows="5"
+              cols="20"
+              aria-label="Modifier le post"
+            ></textarea>
+            <button @click="editPost(posts.postId, posts.postContent, index)">
+              Valider
+            </button>
+          </div>
+          <div v-else class="post-content">{{ posts.postContent }}</div>
           <div class="sub-content">
-            <div class="like"><i class="far fa-thumbs-up fa-lg"></i></div>
+            <div class="like"></div>
             <div class="comments" @click="toggleComments(index)">
               Commentaires
             </div>
@@ -111,10 +132,34 @@
                       >
                     </div>
                   </div>
-                  <div class="comment-text">
+                  <textarea
+                    class="commentEdit"
+                    v-if="isEditingComment[comments.commentIndex]"
+                    v-model="comments.commentContent"
+                    rows="1"
+                    cols="20"
+                    aria-label="Modifier le commentaire"
+                  ></textarea>
+                  <div v-else class="comment-text">
                     <p>{{ comments.commentContent }}</p>
                   </div>
                 </div>
+                <i
+                  class="fas fa-check"
+                  v-if="isEditingComment[comments.commentIndex]"
+                  @click="
+                    editComment(
+                      comments.commentId,
+                      comments.commentContent,
+                      comments.commentIndex
+                    )
+                  "
+                ></i>
+                <i
+                  class="fas fa-pen"
+                  @click="triggerEditComments(comments.commentIndex)"
+                  v-if="comments.commentUserId == userId || isAdmin === 1"
+                ></i>
                 <button
                   v-if="comments.commentUserId == userId || isAdmin === 1"
                   @click="deleteComment(comments.commentId)"
@@ -153,6 +198,8 @@ export default {
     allPosts: "",
     isAdmin: 0,
     commentsOn: [],
+    isEditingPost: [],
+    isEditingComment: [],
   }),
   created() {
     axios
@@ -172,6 +219,42 @@ export default {
     this.getPosts();
   },
   methods: {
+    editPost(postId, content, index) {
+      axios
+        .put(
+          `http://localhost:3000/posts/${postId}`,
+          { content: content },
+          {
+            headers: { authorization: this.$cookies.get("token") },
+          }
+        )
+        .then((res) => {
+          console.log(res);
+          this.triggerEditPosts(index);
+          this.getPosts();
+        });
+    },
+    editComment(commentId, content, index) {
+      axios
+        .put(
+          `http://localhost:3000/comments/${commentId}`,
+          { content: content },
+          {
+            headers: { authorization: this.$cookies.get("token") },
+          }
+        )
+        .then((res) => {
+          console.log(res);
+          this.triggerEditComments(index);
+          this.getPosts();
+        });
+    },
+    triggerEditPosts: function (index) {
+      this.isEditingPost[index] = !this.isEditingPost[index];
+    },
+    triggerEditComments: function (index) {
+      this.isEditingComment[index] = !this.isEditingComment[index];
+    },
     resize(e) {
       e.target.style.height = "auto";
       e.target.style.height = `${e.target.scrollHeight}px`;
@@ -247,7 +330,14 @@ export default {
         this.allPosts = res.data;
         this.allPosts.posts.forEach(() => {
           this.commentsOn.push(false);
+          this.isEditingPost.push(false);
         });
+        for (let i = 0; i < this.allPosts.posts.length; i++) {
+          let line = this.allPosts.posts[i];
+          line.comments.forEach(() => {
+            this.isEditingComment.push(false);
+          });
+        }
       });
     },
   },
@@ -334,6 +424,39 @@ export default {
       }
     }
     .posts {
+      .onEditingPost {
+        display: flex;
+        flex-direction: column;
+        button {
+          margin-top: 15px;
+          width: 40%;
+          margin-left: 11px;
+          border: 0;
+          width: 20%;
+          height: 30px;
+          background: #627899;
+          color: #fff;
+          font-size: 1.1em;
+          border-radius: 4px;
+          align-self: flex-start;
+          cursor: pointer;
+          &:hover {
+            opacity: 0.8;
+          }
+        }
+        textarea {
+          box-shadow: 0px 0px 5px 2px rgb(202, 202, 202);
+          border: 0;
+          outline: none;
+          width: 95%;
+          margin: auto;
+          margin-top: 10px;
+          resize: none;
+          font-family: "Roboto-regular";
+          height: auto;
+        }
+      }
+
       .post {
         border-radius: 4px;
         box-shadow: 0px 0px 3px 3px rgb(228, 228, 228);
@@ -382,6 +505,15 @@ export default {
             button {
               border: 0;
               background: 0;
+              cursor: pointer;
+              margin-right: 5px;
+              color: #2c3e50;
+              &:hover {
+                opacity: 0.75;
+              }
+            }
+            .fa-check,
+            .fa-pen {
               cursor: pointer;
               margin-right: 5px;
               color: #2c3e50;
@@ -457,7 +589,8 @@ export default {
               flex-direction: column;
               align-items: flex-start;
             }
-            button {
+            button,
+            i {
               border: 0;
               background: 0;
               cursor: pointer;

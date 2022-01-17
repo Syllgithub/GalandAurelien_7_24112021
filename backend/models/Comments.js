@@ -41,6 +41,10 @@ class Comments {
 
     return db.execute(sql);
   }
+  static editCommentById(commentId, content) {
+    let sql = `UPDATE comments SET content = "${content}" WHERE id=${commentId};`;
+    return db.execute(sql);
+  }
 }
 
 module.exports = Comments;

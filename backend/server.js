@@ -34,7 +34,7 @@ app.use((err, req, res, next) => {
   console.log(err.code);
 
   res.status(500).json({
-    message: "Something went wrong",
+    message: "Erreur" + err,
   });
 });
 

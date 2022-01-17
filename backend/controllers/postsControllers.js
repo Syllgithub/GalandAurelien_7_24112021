@@ -58,6 +58,7 @@ exports.getAllPosts = async (req, res, next) => {
         commentPostId: line.commentPostID,
         commentUserId: line.commentUserID,
         commentContent: line.commentContent,
+        commentIndex: i,
       });
     }
     previousPostId = line.postID;
@@ -82,6 +83,22 @@ exports.deletePost = async (req, res, next) => {
   if (post[0].userId == userId || user[0].isAdmin == 1) {
     await Posts.deletePost(req.params.id);
     res.status(201).json({ message: "Post supprimé !" });
+  } else {
+    res.status(401).json({ error: "Requete non autorisée !" });
+  }
+};
+
+exports.updatePost = async (req, res, next) => {
+  const token = req.headers.authorization;
+  const decodedToken = jwt.verify(token, "PZCTBIKQDOE");
+  const userId = decodedToken.userId;
+
+  const [user, _] = await User.findById(userId);
+  const [post, __] = await Posts.findPostById(req.params.id);
+
+  if (post[0].userId == userId || user[0].isAdmin == 1) {
+    await Posts.editPostById(req.params.id, req.body.content);
+    res.status(200).json({ message: "Post modifié !" });
   } else {
     res.status(401).json({ error: "Requete non autorisée !" });
   }

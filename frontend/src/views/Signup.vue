@@ -367,7 +367,7 @@ export default {
     font-size: 1.1em;
     border: 0;
     border-radius: 3px;
-    background: lightsteelblue;
+    background: #627899;
     box-shadow: 0 0 3px 1px lightgray;
     color: #fff;
     cursor: pointer;
