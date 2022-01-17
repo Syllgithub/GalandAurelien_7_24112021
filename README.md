@@ -5,7 +5,14 @@
 ### Pour lancer l'application, vous devez télécharger ce repository
 
 ### Ensuite 
-* Importez le fichier groupomania.sql du dossier sql dans votre base de données
+* Créez une base de données nommée groupomania via mysql 
+```
+CREATE DATABASE groupomania;
+```
+* Importez le fichier groupomania.sql du dossier sql dans votre base de données (via une console)
+```
+mysql groupomania < groupomania.sql
+```
 
 #### Dans le dossier backend 
 * Créez un fichier .env avec les informations suivantes : 
